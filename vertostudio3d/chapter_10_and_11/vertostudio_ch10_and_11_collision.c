@@ -63,9 +63,9 @@ void loadGame(GameState *game)
   SDL_Surface *surface = NULL;
 
   //This was to figure out the cwd
-  char buff[FILENAME_MAX];
-  GetCurrentDir( buff, FILENAME_MAX );
-  printf("Current working dir: %s\n", buff);
+  // char buff[FILENAME_MAX];
+  // GetCurrentDir( buff, FILENAME_MAX );
+  // printf("Current working dir: %s\n", buff);
 
 
   //Load images and create rendering textures from them
