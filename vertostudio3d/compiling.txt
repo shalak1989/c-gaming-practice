@@ -1,0 +1,14 @@
+gcc .\testgame.c -I C:/development/sdl2/include -L C:/development/sdl2/lib -lmingw32 -lsdl2main -lsdl2 -mwindows
+
+1) -I is the include path you need, we are going to use sdl2 because I don't think the default windows path one worked
+2) -L this is the location of the library files and every -l(file) after that are the individual files needed
+3) -mwindows tells the compiler to use windows mode, without this you run into errors with things like main etc.
+
+Some of your earlier notes in setup for debug may not be 100% correct.
+
+4) looks like you can just do gcc .\testgame.c -lmingw32 -lsdl2main -lsdl2 -mwindows
+-- it looks like the compiler is finding SDL2 in the include path C:/mingw that you put in your environment variables
+
+5) you should probably eventually use a Makefile
+
+6) You need to link -lSDL2_image as well when compiling

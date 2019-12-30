@@ -1,0 +1,13 @@
+See this projects c_cpp_properties and tasks.json files.
+
+TLDR:
+
+1) Download SDL2 and put the include files in MinGW/include
+2) lib files in MinGW/lib
+3) Put SDL2.dll in the directory where your executable will be created.
+
+
+At least on windows, it looks like you need to put
+#define SDL_MAIN_HANDLED
+
+at the top of any file including SDL.h

@@ -1,0 +1,13 @@
+arrays are passed by reference into functions (by default)
+
+structs are copied by default into function (passed by value), if you want to mutate
+the struct you need to pass by reference with & (ampersand) operator.
+
+the function that takes a reference (address) takes a pointer as one of its parameters.
+
+so func foo(Man *man)
+
+func(&manVariable)
+
+If you want to prevent changes make it a const pointer parameter: func foo(const Man *man)
+
