@@ -272,6 +272,11 @@ int processEvents(SDL_Window *window, GameState *game)
     const Uint8 *state = SDL_GetKeyboardState(NULL);
     if (state[SDL_SCANCODE_UP])
     {
+        // -- consider coming here and making a log function with a function pointer that allows you to change whether it goes to a file or debug console
+        // FILE *fp = fopen("test.txt", "a");
+
+        // fprintf(fp, "man x position: %g\n", game->man.x);
+        // fclose(fp);
         game->man.dy -= 0.2f;
     }
 
@@ -362,7 +367,6 @@ void doRender(SDL_Renderer *renderer, GameState *game)
 
 int main(int argc, char *argv[])
 {
-    printf("made it here");
     GameState gameState;
     SDL_Window *window = NULL;     // Declare a window
     SDL_Renderer *renderer = NULL; // Declare a renderer
