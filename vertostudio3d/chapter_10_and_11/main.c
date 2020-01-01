@@ -296,6 +296,7 @@ int processEvents(SDL_Window *window, GameState *game)
   //Walking
   if(state[SDL_SCANCODE_LEFT])
   {
+    //this does acceleration up to a certain point then stops, to see what its like without comment out the reset code that makes it = -6
     game->man.dx -= 0.5;
     if(game->man.dx < -6)
     {
@@ -316,6 +317,7 @@ int processEvents(SDL_Window *window, GameState *game)
   }
   else
   {
+    //this code basically mimics friction, it slows down x movement and eventually just sets it to 0. Without this based on acceleration your character would always be sliding
     game->man.animFrame = 0;
     game->man.dx *= 0.8f;
     game->man.slowingDown = 1;

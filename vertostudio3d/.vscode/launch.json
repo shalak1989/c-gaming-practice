@@ -15,7 +15,7 @@
             //If your exe is compiled/ran from the base directory you can probably use workspaceFolder again
             "cwd": "${fileDirname}",
             "environment": [],
-            "externalConsole": false,
+            "externalConsole": true,
             "MIMode": "gdb",
             "miDebuggerPath": "C:\\MinGW\\bin\\gdb.exe",
             "setupCommands": [
@@ -25,7 +25,7 @@
                     "ignoreFailures": true
                 }
             ],
-            "preLaunchTask": "gcc.exe build active file"
+           "preLaunchTask": "make"
         }
     ]
 }

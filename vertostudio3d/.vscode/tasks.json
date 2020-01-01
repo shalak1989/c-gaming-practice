@@ -2,23 +2,23 @@
     "tasks": [
         {
             "type": "shell",
-            "label": "gcc.exe build active file",
-            "command": "C:/MinGW/bin/gcc.exe",
+            "label": "make",
+            "command": "make clean-windows; make",
             "args": [
                 //remember these are the flags/args passed to gcc so your flags are needed here
-                "-g",
-                "${file}",
-                "-o",
-                "${fileDirname}\\${fileBasenameNoExtension}.exe",
-                "-lmingw32",
-                "-lsdl2main",
-                "-lsdl2",
-                "-mwindows",
-                "-lSDL2_image"
-
+                // "-g",
+                // "${file}",
+                // "-o",
+                // "${fileDirname}\\${fileBasenameNoExtension}.exe",
+                // "-lmingw32",
+                // "-lsdl2main",
+                // "-lsdl2",
+                // "-mwindows",
+                // "-lSDL2_image",
+                // "-lSDL2_ttf"
             ],
             "options": {
-                "cwd": "C:/MinGW/bin"
+                "cwd": "${fileDirname}"
             }
         }
     ],
