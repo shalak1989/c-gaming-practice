@@ -168,7 +168,7 @@ void process(GameState *game)
         {
             game->deathCountdown = 120;
         }
-        if (game->deathCountdown > 0)
+        if (game->deathCountdown >= 0)
         {
             game->deathCountdown--;
             if (game->deathCountdown < 0)
