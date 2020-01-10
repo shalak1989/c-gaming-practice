@@ -38,20 +38,20 @@ void loadGame(GameState *game)
     game->star = SDL_CreateTextureFromSurface(game->renderer, surface);
     SDL_FreeSurface(surface);
 
-    surface = IMG_Load("Skeleton Idle.png");
+    surface = IMG_Load("man_lta.png");
     if (surface == NULL)
     {
-        printf("Cannot find Skeleton Idle.png!\n\n");
+        printf("man_lta.png!\n\n");
         SDL_Quit();
         exit(1);
     }
     game->manFrames[0] = SDL_CreateTextureFromSurface(game->renderer, surface);
     SDL_FreeSurface(surface);
 
-    surface = IMG_Load("Skeleton Walk.png");
+    surface = IMG_Load("man_ltb.png");
     if (surface == NULL)
     {
-        printf("Cannot find Skeleton Walk.png!\n\n");
+        printf("Cannot find man_ltb.png!\n\n");
         SDL_Quit();
         exit(1);
     }
@@ -62,6 +62,9 @@ void loadGame(GameState *game)
     game->brick = SDL_CreateTextureFromSurface(game->renderer, surface);
     SDL_FreeSurface(surface);
 
+    surface = IMG_Load("fire.png");
+    game->fire = SDL_CreateTextureFromSurface(game->renderer, surface);
+    SDL_FreeSurface(surface);
     //Load Fonts
     game->font = TTF_OpenFont("fonts/FFF_Tusj.ttf", 48);
     if (!game->font)
@@ -73,7 +76,7 @@ void loadGame(GameState *game)
 
     game->label = NULL;
 
-    game->man.x = 320 - 40;
+    game->man.x = 0;
     game->man.y = 240 - 40;
     game->man.dx = 0;
     game->man.dy = 0;
@@ -81,16 +84,20 @@ void loadGame(GameState *game)
     game->man.animFrame = 0;
     game->man.facingLeft = 1;
     game->man.slowingDown = 0;
+    game->man.lives = 3;
+    game->man.isDead = 0;
     game->statusState = STATUS_STATE_LIVES;
 
     init_status_lives(game);
 
     game->time = 0;
+    game->scrollX = 0;
+    game->deathCountdown = -1;
 
     //init stars
-    for (int i = 0; i < 100; i++)
+    for (int i = 0; i < NUM_STARS; i++)
     {
-        game->stars[i].x = rand() % 640;
+        game->stars[i].x = 320 + rand() % 38400;
         game->stars[i].y = rand() % 480;
     }
 
@@ -99,8 +106,11 @@ void loadGame(GameState *game)
     {
         game->ledges[i].w = 256;
         game->ledges[i].h = 64;
-        game->ledges[i].x = i * 256;
-        game->ledges[i].y = 400;
+        game->ledges[i].x = i * 384;
+        if (i == 0)
+            game->ledges[i].y = 400;
+        else
+            game->ledges[i].y = 300 + 100 - rand() % 200;
     }
     game->ledges[99].x = 350;
     game->ledges[99].y = 200;
@@ -122,33 +132,58 @@ void process(GameState *game)
 
     if (game->time > 120)
     {
+        printf("made it to shutdown");
         shutdown_status_lives(game);
         game->statusState = STATUS_STATE_GAME;
     }
 
     if (game->statusState == STATUS_STATE_GAME)
     {
-        //man movement
-        Man *man = &game->man;
-        man->x += man->dx;
-        man->y += man->dy;
-
-        if (man->dx != 0 && man->onLedge && !man->slowingDown)
+        if (!game->man.isDead)
         {
-            if (game->time % 8 == 0)
+            //man movement
+            Man *man = &game->man;
+            man->x += man->dx;
+            man->y += man->dy;
+
+            if (man->dx != 0 && man->onLedge && !man->slowingDown)
             {
-                if (man->animFrame == 0)
+                if (game->time % 8 == 0)
                 {
-                    man->animFrame = 1;
+                    if (man->animFrame == 0)
+                    {
+                        man->animFrame = 1;
+                    }
+                    else
+                    {
+                        man->animFrame = 0;
+                    }
                 }
-                else
-                {
-                    man->animFrame = 0;
-                }
+            }
+
+            man->dy += GRAVITY;
+        }
+
+        if (game->man.isDead && game->deathCountdown < 0)
+        {
+            game->deathCountdown = 120;
+        }
+        if (game->deathCountdown > 0)
+        {
+            game->deathCountdown--;
+            if (game->deathCountdown < 0)
+            {
+                // init_game_over(game);
+                // game->statusState = STATUS_STATE_GAMEOVER
+                init_status_lives(game);
             }
         }
 
-        man->dy += GRAVITY;
+        game->scrollX = -game->man.x + 320;
+        if (game->scrollX > 0)
+        {
+            game->scrollX = 0;
+        }
     }
 }
 
@@ -159,14 +194,21 @@ void collisionDetect(GameState *game)
     //So this makes the collision with the left side look good.... but the right edge of the map allows the char to run off the screen
     //It still stops him... I am not sure exactly why this is but I suspect its because the "man" while he has coordinates has no "collision" himself.
     //It so happens that when x is 0 it is the left side of the man image... but 640 is not the right side of the man image.... gonna stop it at less pixels for now but its not a good perm fix
-    printf("%g\n\n", game->man.x);
+    // printf("%g\n\n", game->man.x);
+    for (int i = 0; i < NUM_STARS; i++)
+    {
+        if (collide2d(game->man.x, game->man.y, game->stars[i].x, game->stars[i].y, 40, 44, 32, 32))
+        {
+            game->man.isDead = 1;
+        }
+    }
     if (game->man.x < 0)
         game->man.x = 0;
-    if (game->man.x > 630)
-    {
-        game->man.x = 630;
-    }
-    for (int i = 0; i < 100; i++)
+    // if (game->man.x > 630)
+    // {
+    //     game->man.x = 630;
+    // }
+    for (int i = 0; i < NUM_STARS; i++)
     {
         float mw = 48, mh = 48;
         float mx = game->man.x, my = game->man.y;
@@ -344,25 +386,32 @@ void doRender(SDL_Renderer *renderer, GameState *game)
 
         for (int i = 0; i < 100; i++)
         {
-            SDL_Rect ledgeRect = {game->ledges[i].x, game->ledges[i].y, game->ledges[i].w, game->ledges[i].h};
+            //scrollX getting added to every x call is brittle... probably make it a function call.. only added to three places atm
+            SDL_Rect ledgeRect = {game->scrollX + game->ledges[i].x, game->ledges[i].y, game->ledges[i].w, game->ledges[i].h};
             SDL_RenderCopy(renderer, game->brick, NULL, &ledgeRect);
         }
 
         //draw a rectangle at man's position
-        SDL_Rect rect = {game->man.x, game->man.y, 48, 48};
+        SDL_Rect rect = {game->scrollX + game->man.x, game->man.y, 48, 48};
         SDL_RenderCopyEx(renderer, game->manFrames[game->man.animFrame],
                          NULL, &rect, 0, NULL, (game->man.facingLeft == 0));
 
+        if (game->man.isDead)
+        {
+            SDL_Rect rect = {game->scrollX + game->man.x - 24 + 38 / 2 + 10, game->man.y - 24 - 83 / 2, 38, 83};
+            SDL_RenderCopyEx(renderer, game->fire,
+                             NULL, &rect, 0, NULL, (game->time % 20 < 10));
+        }
         //draw the star image
-        //  for(int i = 0; i < 100; i++)
-        //  {
-        //    SDL_Rect starRect = { game->stars[i].x, game->stars[i].y, 64, 64 };
-        //    SDL_RenderCopy(renderer, game->star, NULL, &starRect);
-        //  }
-
-        //We are done drawing, "present" or show to the screen what we've drawn
-        SDL_RenderPresent(renderer);
+        for (int i = 0; i < NUM_STARS; i++)
+        {
+            SDL_Rect starRect = {game->scrollX + game->stars[i].x, game->stars[i].y, 64, 64};
+            SDL_RenderCopy(renderer, game->star, NULL, &starRect);
+        }
     }
+    //We are done drawing, "present" or show to the screen w,hat we've drawn
+
+    SDL_RenderPresent(renderer);
 }
 
 int main(int argc, char *argv[])

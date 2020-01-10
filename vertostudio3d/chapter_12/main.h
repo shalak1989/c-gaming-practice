@@ -5,6 +5,7 @@
 #define STATUS_STATE_LIVES 0
 #define STATUS_STATE_GAME 1
 #define STATUS_STATE_GAMEOVER 2
+#define NUM_STARS 100
 
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_ttf.h"
@@ -14,9 +15,10 @@ typedef struct
 {
   float x, y;
   float dx, dy;
-  short life;
+  short lives;
   char *name;
   int onLedge;
+  int isDead;
   
   int animFrame, facingLeft, slowingDown;
 } Man;
@@ -33,11 +35,13 @@ typedef struct
 
 typedef struct
 {
+  float scrollX;
+
   //Players
   Man man;
   
   //Stars
-  Star stars[100];
+  Star stars[NUM_STARS];
 
   //Ledges
   Ledge ledges[100];
@@ -47,12 +51,14 @@ typedef struct
   SDL_Texture *manFrames[2];
   SDL_Texture *brick;
   SDL_Texture *label;
+  SDL_Texture *fire;
+  int labelW, labelH;
 
   //Fonts
   TTF_Font *font;
   
   //time
-  int time;
+  int time, deathCountdown;
   int statusState;
   
   //Renderer

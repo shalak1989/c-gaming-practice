@@ -11,4 +11,7 @@ it was only working due to you having it in C:/mingw/bin which is included in yo
 
 Leave the files in the base directory alone for now as the test.c file uses some of them. 
 
+If you notice things don't seem to be drawing to the screen correctly, make sure you have a SDL_RenderPresent always getting hit. If its hidden in a conditional you may
+have a branch of code that simply never gets drawn.
+
 -->
